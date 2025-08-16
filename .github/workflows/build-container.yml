@@ -1,0 +1,47 @@
+name: Build in rust container
+run-name: Build in rust container on @${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  PROJECT_NAME: hello_world
+  VERSION: 0.0.1.${{ github.run_number }} # or github.run_id
+  TARGET: x86_64-pc-windows-gnu
+
+jobs:
+  build:
+    name: Build in rust container
+    runs-on: ubuntu-latest
+    container:
+      image: rust:latest
+
+    steps:
+    - name: Prepare environment
+      run: |
+        apt-get update
+        apt-get -y install gcc-mingw-w64    
+    
+    - uses: actions/checkout@v4
+    
+    - name: Build
+      run: |
+        echo "pwd: $(pwd)" 
+        echo "version: ${{ env.VERSION }}"
+        rustup target add ${{ env.TARGET }}
+        cargo build --target ${{ env.TARGET }} --release
+        echo "----------------"
+        find ./target/x86_64-pc-windows-gnu/release
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_NAME }}
+        path: |
+          ./target/x86_64-pc-windows-gnu/release/*.exe
+        retention-days: 1
+        overwrite: true

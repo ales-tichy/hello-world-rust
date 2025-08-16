@@ -1,0 +1,53 @@
+name: Build with Dockerfile
+run-name: Build with Dockerfile on @${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  PROJECT_NAME: hello_world
+  VERSION: 0.0.1.${{ github.run_id }}
+  TARGET: x86_64-pc-windows-gnu
+
+jobs:
+  build:
+    name: Build with Dockerfile
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        tags: "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
+        load: true
+        cache-from: type=gha,scope=container
+        cache-to: type=gha,mode=max,scope=container
+
+    - name: Get build artifacts
+      run: |
+        mkdir -p artifacts
+        docker create --name "artifacts_${{ github.run_id }}" "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
+        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.TARGET }}/release/. ./artifacts
+        docker rm "artifacts_${{ github.run_id }}"
+        docker rmi "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
+        find ./artifacts
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_NAME }}
+        path: |
+          ./artifacts/*.exe
+        retention-days: 1
+        overwrite: true
