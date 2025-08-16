@@ -1,11 +1,11 @@
-name: Build with Dockerfile
+name: Build with Dockerfile no Github Actions
 
 on:
   workflow_dispatch:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -24,12 +24,8 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Build Docker image
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: ./Dockerfile
-        tags: "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
-        load: true
+      run: |
+        docker build -t "${{ env.PROJECT_NAME }}:${{ env.VERSION }}" -f Dockerfile .
 
     - name: Get build artifacts
       run: |
@@ -47,4 +43,3 @@ jobs:
           ./artfacts/*.exe
         retention-days: 1
         overwrite: true
-

@@ -1,4 +1,4 @@
-FROM rust:latest as build-stage
+FROM rust:latest AS build-stage
 WORKDIR /app
 COPY . .
 RUN apt-get update
