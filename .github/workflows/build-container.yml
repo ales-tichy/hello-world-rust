@@ -3,15 +3,15 @@ run-name: Build in rust container on @${{ github.ref_name }} by @${{ github.acto
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches: [ "main" ]
-  # pull_request:
-  #   branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
   PROJECT_NAME: hello_world
-  VERSION: 0.0.1.${{ github.run_id }} # or VERSION: 0.0.1.${{ github.run_number }}
+  VERSION: 0.0.1.${{ github.run_number }}
   TARGET: x86_64-pc-windows-gnu
 
 jobs:
