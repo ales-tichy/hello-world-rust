@@ -8,6 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  TARGET: x86_64-pc-windows-gnu
   VERSION: 0.0.1.${{ github.run_id }}
 
 jobs:
@@ -28,10 +29,14 @@ jobs:
       run: |
         echo "pwd: $(pwd)" 
         echo "version: ${{ env.VERSION }}"
-        rustup target add x86_64-pc-windows-gnu
-        cargo build --target x86_64-pc-windows-gnu --release
+        rustup target add ${{ env.TARGET }}
+        cargo build --target ${{ env.TARGET }} --release
         ls -la
         find .
+        echo "--------------"
+        echo "Specific find:"
+        echo "--------------"
+        find ./target/x86_64-pc-windows-gnu/release
 
     # - uses: actions/upload-artifact@v4
     #   with:
