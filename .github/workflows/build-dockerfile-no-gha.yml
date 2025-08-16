@@ -32,7 +32,7 @@ jobs:
         mkdir -p artifacts
         docker create --name "artifacts_${{ github.run_id }}" "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         docker export "artifacts_${{ github.run_id }}" | tar t
-        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.TARGET }}/release/* artifacts/
+        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.TARGET }}/release/ ./artifacts
         docker rm "artifacts_${{ github.run_id }}"
         docker rmi "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         find ./artifacts
