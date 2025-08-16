@@ -2,15 +2,16 @@ name: Build with Dockerfile
 
 on:
   workflow_dispatch:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
   PROJECT_NAME: hello_world
   VERSION: 0.0.1.${{ github.run_id }}
+  TARGET: x86_64-pc-windows-gnu
 
 jobs:
   build:
@@ -28,13 +29,13 @@ jobs:
         context: .
         file: ./Dockerfile
         tags: "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
-        load: true
+        #load: true
 
     - name: Get build artifacts
       run: |
         mkdir -p artifacts
         docker create --name "artifacts_${{ github.run_id }}" "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
-        docker cp "artifacts_${{ github.run_id }}":/app/target/* artifacts/
+        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.PROJECT_NAME }}/release/* artifacts/
         docker rm "artifacts_${{ github.run_id }}"
         docker rmi "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         find ./artifacts
@@ -43,7 +44,7 @@ jobs:
       with:
         name: ${{ env.PROJECT_NAME }}
         path: |
-          ./target/x86_64-pc-windows-gnu/release/*.exe
+          ./artfacts/*.exe
         retention-days: 1
         overwrite: true
 
