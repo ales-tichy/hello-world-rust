@@ -51,4 +51,3 @@ jobs:
           ./artifacts/*.exe
         retention-days: 1
         overwrite: true
-

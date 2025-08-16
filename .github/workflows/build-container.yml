@@ -11,7 +11,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   PROJECT_NAME: hello_world
-  VERSION: 0.0.1.${{ github.run_number }}
+  VERSION: 0.0.1.${{ github.run_number }} # or github.run_id
   TARGET: x86_64-pc-windows-gnu
 
 jobs:
