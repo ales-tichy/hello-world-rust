@@ -35,7 +35,7 @@ jobs:
       run: |
         mkdir -p artifacts
         docker create --name "artifacts_${{ github.run_id }}" "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
-        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.PROJECT_NAME }}/release/* artifacts/
+        docker cp "artifacts_${{ github.run_id }}":/app/target/${{ env.TARGET }}/release/* artifacts/
         docker rm "artifacts_${{ github.run_id }}"
         docker rmi "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         find ./artifacts
