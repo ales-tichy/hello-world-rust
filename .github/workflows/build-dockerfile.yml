@@ -9,7 +9,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TAG: hello_world
+  PROJECT_NAME: hello_world
   VERSION: 0.0.1.${{ github.run_id }}
 
 jobs:
@@ -27,35 +27,23 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        tags: "${{ env.TAG }}:${{ env.VERSION }}"
+        tags: "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         load: true
 
     - name: Get build artifacts
       run: |
         mkdir -p artifacts
-        docker create --name "artifacts_${{ github.run_id }}" "${{ env.TAG }}:${{ env.VERSION }}"
+        docker create --name "artifacts_${{ github.run_id }}" "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         docker cp "artifacts_${{ github.run_id }}":/app/target/* artifacts/
         docker rm "artifacts_${{ github.run_id }}"
-        docker rmi "${{ env.TAG }}:${{ env.VERSION }}"
+        docker rmi "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         find ./artifacts
 
-    # - name: Upload release artifacts
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: release-binaries
-    #     path: target/release/hello_world
-
-
-    # - name: Prepare artifacts
-    #   run: |
-    #     find .
-    #     mkdir -p ./artifacts
-    #     docker cp $(docker create hello_world:latest):/app/hello_world/target/release/hello_world target/release/
-
-
-
-    # - uses: actions/upload-artifact@v4
-    #   with:
-    #     name: hello-world-
-    #     path: path/to/artifact/world.txt
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_NAME }}
+        path: |
+          ./target/x86_64-pc-windows-gnu/release/*.exe
+        retention-days: 1
+        overwrite: true
 

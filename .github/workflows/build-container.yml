@@ -8,8 +8,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  PROJECT_NAME: hello_world
+  VERSION: 0.0.1.${{ github.run_id }} # or VERSION: 0.0.1.${{ github.run_number }}
   TARGET: x86_64-pc-windows-gnu
-  VERSION: 0.0.1.${{ github.run_id }}
 
 jobs:
   build:
@@ -33,12 +34,15 @@ jobs:
         cargo build --target ${{ env.TARGET }} --release
         ls -la
         find .
-        echo "--------------"
-        echo "Specific find:"
-        echo "--------------"
+        echo "----------------"
+        echo " Specific find: "
+        echo "----------------"
         find ./target/x86_64-pc-windows-gnu/release
 
-    # - uses: actions/upload-artifact@v4
-    #   with:
-    #     name: hello-world-
-    #     path: path/to/artifact/world.txt
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PROJECT_NAME }}
+        path: |
+          ./target/x86_64-pc-windows-gnu/release/*.exe
+        retention-days: 1
+        overwrite: true
