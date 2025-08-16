@@ -32,6 +32,8 @@ jobs:
         file: ./Dockerfile
         tags: "${{ env.PROJECT_NAME }}:${{ env.VERSION }}"
         load: true
+        cache-from: type=gha,scope=container
+        cache-to: type=gha,mode=max,scope=container
 
     - name: Get build artifacts
       run: |
