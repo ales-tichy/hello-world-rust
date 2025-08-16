@@ -8,29 +8,50 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  TAG: hello_world
   VERSION: 0.0.1.${{ github.run_id }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: rust:latest
-
+    
     steps:
-    - name: Prepare environment
-      run: |
-        apt-get update
-        apt-get -y install gcc-mingw-w64    
-    
     - uses: actions/checkout@v4
-    
-    - name: Build
-      run: | 
-        echo "Version: ${{ env.VERSION }}"
-        rustup target add x86_64-pc-windows-gnu
-        cargo build --target x86_64-pc-windows-gnu --release
-        ls -la
-        find . 
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        tags: "${{ env.TAG }}:${{ env.VERSION }}"
+        load: true
+
+    - name: Get build artifacts
+      run: |
+        mkdir -p artifacts
+        docker create --name "artifacts_${{ github.run_id }}" "${{ env.TAG }}:${{ env.VERSION }}"
+        docker cp "artifacts_${{ github.run_id }}":/app/target/release/* artifacts/
+        docker rm "artifacts_${{ github.run_id }}"
+        docker rmi "${{ env.TAG }}:${{ env.VERSION }}"
+        find ./artifacts
+
+    # - name: Upload release artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: release-binaries
+    #     path: target/release/hello_world
+
+
+    # - name: Prepare artifacts
+    #   run: |
+    #     find .
+    #     mkdir -p ./artifacts
+    #     docker cp $(docker create hello_world:latest):/app/hello_world/target/release/hello_world target/release/
+
+
 
     # - uses: actions/upload-artifact@v4
     #   with:
