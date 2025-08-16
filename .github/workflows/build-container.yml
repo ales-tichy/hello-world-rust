@@ -1,11 +1,12 @@
 name: Build in rust container
+run-name: Build in rust container on @${{ github.ref_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -34,10 +35,6 @@ jobs:
         echo "version: ${{ env.VERSION }}"
         rustup target add ${{ env.TARGET }}
         cargo build --target ${{ env.TARGET }} --release
-        ls -la
-        find .
-        echo "----------------"
-        echo " Specific find: "
         echo "----------------"
         find ./target/x86_64-pc-windows-gnu/release
 
