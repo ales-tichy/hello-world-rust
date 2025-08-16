@@ -1,0 +1,39 @@
+name: Build in rust container
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  VERSION: 0.0.1.${{ github.run_id }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: rust:latest
+
+    steps:
+    - name: Prepare environment
+      run: |
+        apt-get update
+        apt-get -y install gcc-mingw-w64    
+    
+    - uses: actions/checkout@v4
+    
+    - name: Build
+      run: |
+        echo "pwd: $(pwd)" 
+        echo "version: ${{ env.VERSION }}"
+        rustup target add x86_64-pc-windows-gnu
+        cargo build --target x86_64-pc-windows-gnu --release
+        ls -la
+        find .
+
+    # - uses: actions/upload-artifact@v4
+    #   with:
+    #     name: hello-world-
+    #     path: path/to/artifact/world.txt

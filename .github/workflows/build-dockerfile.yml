@@ -1,10 +1,11 @@
-name: Rust
+name: Build with Dockerfile
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -33,7 +34,7 @@ jobs:
       run: |
         mkdir -p artifacts
         docker create --name "artifacts_${{ github.run_id }}" "${{ env.TAG }}:${{ env.VERSION }}"
-        docker cp "artifacts_${{ github.run_id }}":/app/target/release/* artifacts/
+        docker cp "artifacts_${{ github.run_id }}":/app/target/* artifacts/
         docker rm "artifacts_${{ github.run_id }}"
         docker rmi "${{ env.TAG }}:${{ env.VERSION }}"
         find ./artifacts
