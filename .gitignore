@@ -2,3 +2,7 @@
 
 .github/workflows/base-rust.yml
 .github/workflows/ci.yml
+
+target
+
+Cargo.lock
